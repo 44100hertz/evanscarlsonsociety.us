@@ -147,6 +147,11 @@ a:hover { color: var(--accent); }
   font-size: 1rem;
   cursor: pointer;
   flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  line-height: 1;
 }
 [data-theme="night"] .scroller-next { background: #3a3a3a; }
 
@@ -166,12 +171,18 @@ a:hover { color: var(--accent); }
 .card img {
   width: 100%;
   height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
   display: block;
   margin-bottom: 0.6rem;
 }
 .card h3 { font-size: 1.1rem; font-weight: 400; margin: 0 0 0.25rem; }
 .card .byline { color: var(--muted); font-size: 0.95rem; margin: 0; }
-.card--empty { opacity: 0.85; }
+.cards--grid {
+  grid-auto-flow: row;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  overflow: visible;
+}
 
 .about { margin: 2.5rem 0 4rem; }
 .about h2 { font-size: 1.7rem; font-weight: 400; margin: 0 0 0.4rem; }
@@ -186,6 +197,13 @@ a:hover { color: var(--accent); }
   max-width: 20em;
   margin: 0 auto 0.5rem;
 }
+.deck {
+  color: var(--muted);
+  font-size: 1.15rem;
+  max-width: 26em;
+  margin: 0 auto 0.65rem;
+}
+.source { color: var(--muted); font-size: 0.9rem; }
 .byline { color: var(--muted); margin: 0; }
 .byline a { text-decoration: none; }
 
