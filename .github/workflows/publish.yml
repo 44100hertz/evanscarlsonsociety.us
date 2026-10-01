@@ -18,10 +18,26 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - name: Build and push gh-pages
+
+      - name: Build, check and push gh-pages
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          bash tools/deploy.sh
+          set -o pipefail
+          bash tools/deploy.sh 2>&1 | tee "$RUNNER_TEMP/publish.log"
+
+      # Logs need a token to read, but the job summary is public. On failure,
+      # dump the tail here so the run page explains itself.
+      - name: Show failure
+        if: failure()
+        run: |
+          {
+            echo '### Publish failed'
+            echo '```'
+            tail -40 "$RUNNER_TEMP/publish.log" 2>/dev/null || echo '(no output captured)'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

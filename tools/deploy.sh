@@ -18,6 +18,11 @@ python3 check.py          # refuses to publish a site with dangling links
 
 name="$(git config user.name || true)"
 email="$(git config user.email || true)"
+if [ -n "${GITHUB_TOKEN:-}" ] && [ -n "${GITHUB_REPOSITORY:-}" ]; then
+    remote="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+else
+    remote="$(git remote get-url origin)"
+fi
 wt="$(mktemp -d)"
 branch="gh-pages"
 
@@ -30,6 +35,7 @@ cp -a _build/. "$wt"/
 git -C "$wt" add -A
 git -C "$wt" -c user.name="${name:-site build}" -c user.email="${email:-site-build@localhost}" \
     commit -qm "Publish $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-git -C "$wt" push -q -f origin "HEAD:refs/heads/$branch"
+git -C "$wt" push -f "$remote" "HEAD:refs/heads/$branch" 2>&1 |
+    sed "s#x-access-token:[^@]*@#x-access-token:***@#g"
 
 echo "published $(git -C "$wt" log -1 --format=%h) to $branch"
