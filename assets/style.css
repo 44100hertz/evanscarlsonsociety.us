@@ -1,0 +1,209 @@
+/* The Evans Carlson Society — paper and night themes. No build step. */
+:root {
+  --bg: #ffffff;
+  --fg: #121212;
+  --muted: #6b6b6b;
+  --accent: #d62420;
+  --rule: #d62420;
+  --line: #e0e0e0;
+  --portrait-w: 8rem;
+  --serif: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, "Times New Roman", serif;
+}
+
+[data-theme="night"] {
+  --bg: #000000;
+  --fg: #f0e6c8;
+  --muted: #b9ac8a;
+  --accent: #cf2420;
+  --rule: #cf2420;
+  --line: #3a2a20;
+}
+
+* { box-sizing: border-box; }
+
+html { background: var(--bg); }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--serif);
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+}
+
+a { color: inherit; }
+a:hover { color: var(--accent); }
+
+/* Night theme darkens overly bright images (spec: star/night behaviour). */
+[data-theme="night"] img:not(.no-dim) { filter: brightness(0.78) contrast(1.06); }
+
+.wrap { max-width: 62rem; margin: 0 auto; padding: 0 1.25rem; }
+
+/* ---------- masthead ---------- */
+.masthead { padding-top: 1.25rem; }
+
+.masthead-top {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 1rem;
+}
+
+.brand-block { position: relative; }
+
+.brand {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.25rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.brand img {
+  width: var(--portrait-w);
+  height: auto;
+  display: block;
+}
+
+.brand-name {
+  font-size: 2.1rem;
+  line-height: 1.08;
+  letter-spacing: 0.01em;
+  display: block;
+}
+
+.theme-menu {
+  position: absolute;
+  inset: 0 0 0 calc(var(--portrait-w) + 1.25rem);
+  display: none;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.15rem;
+  background: var(--bg);
+  font-size: 2.1rem;
+  line-height: 1.08;
+}
+
+.masthead.choosing .theme-menu { display: flex; }
+.masthead.choosing .brand-name { visibility: hidden; }
+
+.theme-menu .theme-title { margin: 0 0 0.1rem; }
+
+.theme-menu button {
+  font: inherit;
+  color: var(--accent);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.theme-menu button[aria-pressed="true"] { color: var(--fg); text-decoration: none; }
+
+.theme-toggle {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: var(--accent);
+  line-height: 0;
+}
+.theme-toggle svg { height: 9rem; width: auto; fill: currentColor; }
+
+.site-nav {
+  text-align: center;
+  font-size: 1.3rem;
+  padding: 1.4rem 0 0.6rem;
+}
+.site-nav a { text-decoration: none; }
+.site-nav .sep { padding: 0 0.6rem; color: var(--muted); }
+
+.rule {
+  border-top: 2px solid var(--rule);
+  height: 4px;
+  box-shadow: 0 4px 0 -2px var(--rule);
+  margin-bottom: 2.25rem;
+}
+
+/* ---------- homepage ---------- */
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 2.5rem 0 1rem;
+}
+.section-head h2 { font-size: 1.7rem; font-weight: 400; margin: 0; }
+
+.scroller-next {
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  border: 0;
+  background: #cccccc;
+  color: #ffffff;
+  font-size: 1rem;
+  cursor: pointer;
+  flex: none;
+}
+[data-theme="night"] .scroller-next { background: #3a3a3a; }
+
+.cards {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(12rem, 1fr);
+  gap: 1.5rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0.5rem;
+}
+
+.card a { text-decoration: none; }
+.card img {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin-bottom: 0.6rem;
+}
+.card h3 { font-size: 1.1rem; font-weight: 400; margin: 0 0 0.25rem; }
+.card .byline { color: var(--muted); font-size: 0.95rem; margin: 0; }
+.card--empty { opacity: 0.85; }
+
+.about { margin: 2.5rem 0 4rem; }
+.about h2 { font-size: 1.7rem; font-weight: 400; margin: 0 0 0.4rem; }
+.about p { max-width: 40em; margin: 0; }
+
+/* ---------- article ---------- */
+.article-head { text-align: center; margin: 0 0 1.75rem; }
+.article-head h1 {
+  font-size: 2.6rem;
+  font-weight: 400;
+  line-height: 1.15;
+  max-width: 20em;
+  margin: 0 auto 0.5rem;
+}
+.byline { color: var(--muted); margin: 0; }
+.byline a { text-decoration: none; }
+
+.article-figure { max-width: 34em; margin: 0 auto 2rem; }
+.article-figure img { width: 100%; height: auto; display: block; }
+.article-figure figcaption { color: var(--muted); font-size: 0.9rem; padding-top: 0.4rem; }
+
+.article-body { max-width: 34em; margin: 0 auto 1.5rem; }
+.article-body p { margin: 0 0 1.25rem; }
+
+@media (min-width: 1200px) {
+  .article-body, .article-figure { max-width: 40em; }
+  .article-head h1 { font-size: 3rem; }
+}
+
+@media (max-width: 720px) {
+  .brand-name, .theme-menu { font-size: 1.5rem; }
+  .theme-toggle svg { height: 6rem; }
+  .site-nav { font-size: 1.1rem; }
+  .article-head h1 { font-size: 1.9rem; }
+}

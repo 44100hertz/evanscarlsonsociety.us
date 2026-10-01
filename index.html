@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en" data-theme="paper">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Evans Carlson Society</title>
+<meta name="description" content="The Evans Carlson Society: a novel broad-front antiwar coalition based in Wisconsin. Articles and dispatches.">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/style.css">
+<link rel="preload" as="image" href="/assets/portrait.webp" type="image/webp">
+<script>try{var t=localStorage.getItem("ecs-theme");if(t==="night")document.documentElement.dataset.theme="night";}catch(e){}</script>
+</head>
+<body>
+
+<header class="masthead wrap">
+  <div class="masthead-top">
+    <div class="brand-block">
+      <a class="brand" href="/">
+        <picture>
+          <source srcset="/assets/portrait.webp" type="image/webp">
+          <img src="/assets/portrait.jpg" width="330" height="579" alt="Evans Carlson">
+        </picture>
+        <span class="brand-name">The<br>Evans Carlson<br>Society</span>
+      </a>
+      <div class="theme-menu" id="theme-menu">
+        <p class="theme-title">Choose Theme</p>
+        <p><button type="button" data-theme-choice="paper" aria-pressed="true">Paper</button>
+          &middot;
+          <button type="button" data-theme-choice="night" aria-pressed="false">Night</button></p>
+      </div>
+    </div>
+
+    <button type="button" class="theme-toggle" aria-expanded="false" aria-controls="theme-menu" title="Choose theme">
+      <svg viewBox="0 0 40 46" aria-hidden="true">
+        <rect x="8" y="2" width="6" height="18"/>
+        <rect x="17" y="2" width="6" height="18"/>
+        <rect x="26" y="2" width="6" height="18"/>
+        <path d="M20,20 L23.06,27.79 L31.41,28.29 L24.95,33.61 L27.05,41.71 L20,37.2 L12.95,41.71 L15.05,33.61 L8.59,28.29 L16.94,27.79 Z"/>
+      </svg>
+    </button>
+  </div>
+
+  <nav class="site-nav" aria-label="Site">
+    <a href="/">Home</a><span class="sep">&middot;</span><a href="#articles">Articles</a><span class="sep">&middot;</span><a href="#about">About</a>
+  </nav>
+
+  <div class="rule" role="presentation"></div>
+</header>
+
+<main class="wrap">
+  <section id="articles" aria-labelledby="articles-heading">
+    <div class="section-head">
+      <h2 id="articles-heading">Most Recent Articles</h2>
+      <button type="button" class="scroller-next" aria-label="Scroll to more articles">&#9654;</button>
+    </div>
+
+    <ul class="cards">
+      <li class="card">
+        <a href="/articles/on-synthesizing-the-maga-tito-axis.html">
+          <img src="/assets/placeholder.svg" width="1000" height="566" alt="">
+          <h3>On Synthesizing the MAGA Tito Axis</h3>
+          <p class="byline">Grant Klusmann<br>Sept 29, 2037</p>
+        </a>
+      </li>
+      <li class="card card--empty">
+        <img src="/assets/placeholder.svg" width="1000" height="566" alt="">
+        <h3>Mock Article Here</h3>
+        <p class="byline">Article<br>Sept 26, 2037</p>
+      </li>
+      <li class="card card--empty">
+        <img src="/assets/placeholder.svg" width="1000" height="566" alt="">
+        <h3>Mock Article Here</h3>
+        <p class="byline">Article<br>Sept 26, 2037</p>
+      </li>
+    </ul>
+  </section>
+
+  <section id="about" class="about" aria-labelledby="about-heading">
+    <h2 id="about-heading">About Us</h2>
+    <p>A novel broad-front antiwar coalition based in Wisconsin. Learn more: <a href="https://acp.us">https://acp.us</a></p>
+  </section>
+</main>
+
+<script src="/assets/site.js"></script>
+</body>
+</html>
