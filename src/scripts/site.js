@@ -46,16 +46,25 @@
     });
   }
 
-  var next = document.querySelector('.scroller-next');
-  var cards = document.querySelector('.cards');
-  if (next && cards) {
-    next.addEventListener('click', function () {
-      var atEnd = cards.scrollLeft >= cards.scrollWidth - cards.clientWidth - 8;
-      if (atEnd) {
-        cards.scrollTo({ left: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
-      } else {
-        cards.scrollBy({ left: Math.round(cards.clientWidth * 0.8), behavior: reduceMotion ? 'auto' : 'smooth' });
-      }
-    });
-  }
+  [].slice.call(document.querySelectorAll('.cards')).forEach(function (cards) {
+    var section = cards.closest('section');
+    var next = section && section.querySelector('.scroller-next');
+    var prev = section && section.querySelector('.scroller-prev');
+    if (!next && !prev) return;
+
+    function atEnd() {
+      return cards.scrollLeft >= cards.scrollWidth - cards.clientWidth - 8;
+    }
+    function atStart() {
+      return cards.scrollLeft <= 8;
+    }
+    function go(dir) {
+      var target;
+      if (dir > 0) target = atEnd() ? 0 : cards.scrollLeft + Math.round(cards.clientWidth * 0.8);
+      else target = atStart() ? cards.scrollWidth - cards.clientWidth : cards.scrollLeft - Math.round(cards.clientWidth * 0.8);
+      cards.scrollTo({ left: target, behavior: reduceMotion ? 'auto' : 'smooth' });
+    }
+    if (next) next.addEventListener('click', function () { go(1); });
+    if (prev) prev.addEventListener('click', function () { go(-1); });
+  });
 })();

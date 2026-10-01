@@ -1,0 +1,21 @@
+---
+import { getCollection } from 'astro:content';
+import Card from './Card.astro';
+import { byNewest } from '../lib/format.js';
+
+const articles = (await getCollection('articles')).sort(byNewest);
+---
+
+<section id="articles" aria-labelledby="articles-heading">
+  <div class="section-head">
+    <h2 id="articles-heading">Recent Articles</h2>
+    <div class="scroller-buttons">
+      <button type="button" class="scroller-prev" aria-label="Scroll back">&#9664;</button>
+      <button type="button" class="scroller-next" aria-label="Show more articles">&#9654;</button>
+    </div>
+  </div>
+
+  <ul class="cards">
+    {articles.map((article) => <Card article={article} />)}
+  </ul>
+</section>

@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import Scroller from '../../components/Scroller.astro';
 import { date } from '../../lib/format.js';
 
 export async function getStaticPaths() {
@@ -21,6 +22,8 @@ const id = article.id;
       <p class="byline">{author} &middot; {date(published)}</p>
     </div>
 
+    <div class="rule" role="presentation"></div>
+
     {fullW > 0 && (
       <figure class="article-figure">
         <picture><source srcset={`/assets/covers/${id}-full.webp`} type="image/webp"><img
@@ -33,4 +36,8 @@ const id = article.id;
       <p class="source">Filed under <a href={canonical}>{pub}</a>.</p>
     </div>
   </article>
+
+  <Scroller />
+
+  <p class="top-link"><a href="#top">Top of page</a></p>
 </Base>
