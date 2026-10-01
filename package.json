@@ -1,0 +1,16 @@
+{
+  "name": "evanscarlsonsociety.us",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sync": "node tools/sync.mjs",
+    "build": "astro build",
+    "check": "node tools/check.mjs",
+    "deploy": "bash tools/deploy.sh"
+  },
+  "dependencies": {
+    "astro": "^7.3.5",
+    "node-html-parser": "^9.0.4"
+  },
+  "packageManager": "pnpm@12.6.0"
+}

@@ -1,46 +1,63 @@
 # The Evans Carlson Society
 
 Static site for <https://evanscarlsonsociety.us>, from the design in
-`website.svg` (the SVG is the mockup, not the site).
+`website.svg` (the SVG is the mockup, not the site). Built with **Astro**; the
+content comes from Grant's public Substack, <https://substack.com/@grantkl>.
 
 **`master` is source. `gh-pages` is generated output, and that is what Pages
 serves.** The mockup is explicit about this (the Safari frame is titled
 *"Static Site: The Evans Carlson Society (gh-pages)"*, and the build notes end
 with *"…rebuild the gh-pages"*). Nothing on `master` is served directly.
 
-    content/          cached Substack posts (the actual article text)
-    site/             hand-authored source: stylesheet, script, portrait,
-                      favicon, and the committed cover images
-    tools/fetch.py    refresh content/ from Grant's public Substack
-    tools/build.py    render content/ + site/ into _build/
-    tools/deploy.sh   build, check, force-push _build/ to gh-pages
-    check.py          verify every local link in _build/ resolves
-    website.svg       the design mockup
+## Layout
 
-## Publishing
+    src/pages/            routes: /, /articles/, /articles/<slug>/
+    src/layouts/Base.astro    the masthead, nav, <head>, theme bootstrap
+    src/components/       Card.astro
+    src/content/articles/ one JSON per article, written by `pnpm sync`
+    src/styles/site.css   paper + night themes
+    src/scripts/site.js   theme chooser, scroller
+    public/assets/        served as-is: portrait, favicon, cover images
+    tools/sync.mjs        fetch + sanitise Substack, prescale covers
+    tools/check.mjs       verify every local link in _build/ resolves
+    tools/deploy.sh       build, check, force-push _build/ to gh-pages
+    content/              raw Substack cache (the awkward part, kept verbatim)
 
-    python3 tools/fetch.py     # only when Grant publishes something new
-    tools/deploy.sh            # build + check + push gh-pages
+## Working on it
 
-`.github/workflows/publish.yml` runs `tools/deploy.sh` on every push to
-`master`, so in practice you push source and CI republishes. Delete the
-workflow if you would rather run `tools/deploy.sh` by hand — the command is the
-same either way, which is why the workflow only calls the script.
+    pnpm install
+    pnpm dev               # local dev server with HMR
+    pnpm sync              # only when Grant publishes something new
+    pnpm build             # -> _build/
+    pnpm deploy            # build + check + push gh-pages
 
-`gh-pages` is one throwaway commit, force-pushed each time; every byte on it is
-derived, so it carries no history. History lives on `master`.
+`.github/workflows/publish.yml` runs the same stages on every push to `master`,
+so in practice you push source and CI republishes. `gh-pages` is one throwaway
+commit, force-pushed each time; every byte on it is derived, so it carries no
+history. History lives on `master`.
 
-`tools/build.py` needs ImageMagick (`magick`) **only** to create cover images
-that are not already committed — with `site/assets/covers/` present (the normal
-case) the build is pure Python and runs on a bare CI runner.
+## Content pipeline
 
-## Content
+`tools/sync.mjs` is the only part that talks to Substack, and the only part that
+is not Astro:
 
-Articles come from Grant's public Substack, <https://substack.com/@grantkl>.
-`tools/fetch.py` caches the archive plus one JSON per post under `content/`.
+1. fetch the post archive and each post's JSON into `content/` (cached, so
+   builds are offline and repeatable);
+2. sanitise `body_html` down to `p/strong/em/a/sup` — Substack ships cover
+   figures, subscribe widgets, `data-attrs` JSON and a "Thanks for reading"
+   pitch that sometimes hides inside a widget and sometimes sits as a bare
+   paragraph, so this is a real parse, done once, here;
+3. prescale covers to 1024px/480px WebP + JPEG and log the dimensions to
+   `content/dimensions.json`, which the templates emit as `width`/`height` to
+   avoid layout shift;
+4. write one clean JSON per article into `src/content/articles/`.
 
-`tools/build.py` rewrites `_build/` wholesale, so never hand-edit anything in
-it; edit `site/` or the templates in `tools/build.py` instead.
+Steps 1–3 need ImageMagick (`magick`) *only* when a cover has to be created;
+with `public/assets/covers/` and `content/dimensions.json` present — the normal
+case — the whole build is Node and Astro and runs on a bare CI runner.
+
+Astro never fetches anything. `src/content.config.ts` just globs the JSON and
+validates it with a zod schema.
 
 ## Themes
 
@@ -49,23 +66,19 @@ choice is kept in `localStorage` and applied before first paint. Night theme
 darkens images via CSS `filter` (opt an image out with `class="no-dim"`).
 Header scrolls away normally — deliberately no return-to-top button.
 
-## Preview
-
-Root-relative paths mean you need a server, not `file://`:
-
-    python3 tools/build.py && python3 -m http.server -d _build
-
 ## Notes and gaps
 
+- URLs are `/articles/<slug>/`. They were `/articles/<slug>.html` for the first
+  few minutes the domain was live; Astro's directory format is the default and
+  worth the change, but nothing redirects the old shape.
 - Byline is "Grant Klusmann" (the site's wording); his Substack byline is
-  "Grant K.". Change `AUTHOR` in `tools/build.py` to match.
+  "Grant K.". It is set by `AUTHOR` in `tools/sync.mjs`.
 - "The Arab World's Only Marxist-Leninist State" is subscriber-only on
-  Substack, so only a preview is public — it is skipped rather than published
-  truncated. Import it by hand if Grant provides the text.
-- "Coming soon" is a three-word placeholder post and is skipped; `fetch.py`
-  drops it at the door.
-- Cover images are re-hosted and prescaled to 1024px/480px WebP with JPEG
-  fallback. They run 7–70KiB rather than the mockup's ~30KiB target.
+  Substack, so only a preview is public — `sync.mjs` skips it rather than
+  publishing it truncated. Import it by hand if Grant provides the text.
+- "Coming soon" is a three-word placeholder post and is skipped.
+- Cover images are re-hosted and prescaled. They run 7–70KiB rather than the
+  mockup's ~30KiB target, and several look like press/agency photos rather than
+  Grant's own — see the note about image rights in the repo history.
 - No `.EPUB` download button yet (the spec asks for one; nothing to link).
-- The password-protected content editor is still a future plan. For now the
-  "static site build tool" the mockup asks for is `tools/build.py`.
+- The password-protected content editor is still a future plan.

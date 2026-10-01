@@ -1,32 +1,12 @@
 {
- "america-and-russia-two-foes-that": {
+ "scott-ritter-the-marine-waging-peace": {
   "full": [
    1024,
-   852
+   1071
   ],
   "thumb": [
    480,
-   399
-  ]
- },
- "carlos-garrido-the-socialist-scholar": {
-  "full": [
-   887,
-   681
-  ],
-  "thumb": [
-   480,
-   369
-  ]
- },
- "christopher-helali-the-red-diplomat": {
-  "full": [
-   1024,
-   473
-  ],
-  "thumb": [
-   480,
-   222
+   502
   ]
  },
  "eddie-liger-smith-a-champion-for": {
@@ -39,24 +19,14 @@
    280
   ]
  },
- "haz-al-din-a-leader-for-a-new-generation": {
-  "full": [
-   677,
-   371
-  ],
-  "thumb": [
-   480,
-   263
-  ]
- },
- "jackson-hinkle-a-marxist-with-a-mission": {
+ "christopher-helali-the-red-diplomat": {
   "full": [
    1024,
-   581
+   473
   ],
   "thumb": [
    480,
-   272
+   222
   ]
  },
  "noah-khrachvik-an-organizer-of-the": {
@@ -69,16 +39,6 @@
    323
   ]
  },
- "scott-ritter-the-marine-waging-peace": {
-  "full": [
-   1024,
-   1071
-  ],
-  "thumb": [
-   480,
-   502
-  ]
- },
  "slava-the-ukrainian-socialist-a-communist": {
   "full": [
    587,
@@ -89,6 +49,36 @@
    752
   ]
  },
+ "carlos-garrido-the-socialist-scholar": {
+  "full": [
+   887,
+   681
+  ],
+  "thumb": [
+   480,
+   369
+  ]
+ },
+ "jackson-hinkle-a-marxist-with-a-mission": {
+  "full": [
+   1024,
+   581
+  ],
+  "thumb": [
+   480,
+   272
+  ]
+ },
+ "haz-al-din-a-leader-for-a-new-generation": {
+  "full": [
+   677,
+   371
+  ],
+  "thumb": [
+   480,
+   263
+  ]
+ },
  "the-central-intelligence-agency-the": {
   "full": [
    662,
@@ -97,6 +87,26 @@
   "thumb": [
    480,
    210
+  ]
+ },
+ "the-unite-america-movement-an-organization": {
+  "full": [
+   799,
+   402
+  ],
+  "thumb": [
+   480,
+   242
+  ]
+ },
+ "america-and-russia-two-foes-that": {
+  "full": [
+   1024,
+   852
+  ],
+  "thumb": [
+   480,
+   399
   ]
  },
  "the-israel-lobby": {
@@ -127,16 +137,6 @@
   "thumb": [
    480,
    269
-  ]
- },
- "the-unite-america-movement-an-organization": {
-  "full": [
-   799,
-   402
-  ],
-  "thumb": [
-   480,
-   242
   ]
  }
 }

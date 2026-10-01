@@ -1,0 +1,36 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { date } from '../../lib/format.js';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('articles');
+  return articles.map((article) => ({ params: { slug: article.id }, props: { article } }));
+}
+
+const { article } = Astro.props;
+const { title, subtitle, author, date: published, canonical, pub, body, fullW, fullH } = article.data;
+const id = article.id;
+---
+
+<Base title={`${title} — The Evans Carlson Society`} description={subtitle || title}>
+  <article>
+    <div class="article-head">
+      <h1>{title}</h1>
+      {subtitle && <p class="deck">{subtitle}</p>}
+      <p class="byline">{author} &middot; {date(published)}</p>
+    </div>
+
+    {fullW > 0 && (
+      <figure class="article-figure">
+        <picture><source srcset={`/assets/covers/${id}-full.webp`} type="image/webp"><img
+          src={`/assets/covers/${id}-full.jpg`} width={fullW} height={fullH} alt=""></picture>
+      </figure>
+    )}
+
+    <div class="article-body">
+      <Fragment set:html={body} />
+      <p class="source">Filed under <a href={canonical}>{pub}</a>.</p>
+    </div>
+  </article>
+</Base>

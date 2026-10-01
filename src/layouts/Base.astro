@@ -1,0 +1,69 @@
+---
+import '../styles/site.css';
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" data-theme="paper">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{title}</title>
+  <meta name="description" content={description}>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" as="image" href="/assets/portrait.webp" type="image/webp">
+  <script is:inline>
+    try {
+      if (localStorage.getItem('ecs-theme') === 'night') {
+        document.documentElement.dataset.theme = 'night';
+      }
+    } catch {}
+  </script>
+</head>
+<body>
+
+<header class="masthead wrap">
+  <div class="masthead-top">
+    <div class="brand-block">
+      <a class="brand" href="/">
+        <picture>
+          <source srcset="/assets/portrait.webp" type="image/webp">
+          <img src="/assets/portrait.jpg" width="330" height="579" alt="Evans Carlson">
+        </picture>
+        <span class="brand-name">The<br>Evans Carlson<br>Society</span>
+      </a>
+      <div class="theme-menu" id="theme-menu">
+        <p class="theme-title">Choose Theme</p>
+        <p><button type="button" data-theme-choice="paper" aria-pressed="true">Paper</button>
+          &middot;
+          <button type="button" data-theme-choice="night" aria-pressed="false">Night</button></p>
+      </div>
+    </div>
+
+    <button type="button" class="theme-toggle" aria-expanded="false" aria-controls="theme-menu" title="Choose theme">
+      <svg viewBox="0 0 40 46" aria-hidden="true">
+        <rect x="8" y="2" width="6" height="18"/>
+        <rect x="17" y="2" width="6" height="18"/>
+        <rect x="26" y="2" width="6" height="18"/>
+        <path d="M20,20 L23.06,27.79 L31.41,28.29 L24.95,33.61 L27.05,41.71 L20,37.2 L12.95,41.71 L15.05,33.61 L8.59,28.29 L16.94,27.79 Z"/>
+      </svg>
+    </button>
+  </div>
+
+  <nav class="site-nav" aria-label="Site">
+    <a href="/">Home</a><span class="sep">&middot;</span><a href="/articles/">Articles</a><span class="sep">&middot;</span><a href="/#about">About</a>
+  </nav>
+
+  <div class="rule" role="presentation"></div>
+</header>
+
+<main class="wrap">
+  <slot />
+</main>
+
+<script>
+  import '../scripts/site.js';
+</script>
+</body>
+</html>

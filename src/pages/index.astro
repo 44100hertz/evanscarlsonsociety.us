@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Card from '../components/Card.astro';
+import { byNewest } from '../lib/format.js';
+
+const articles = (await getCollection('articles')).sort(byNewest).slice(0, 6);
+---
+
+<Base title="The Evans Carlson Society"
+      description="Articles and dispatches from the Evans Carlson Society.">
+  <section id="articles" aria-labelledby="articles-heading">
+    <div class="section-head">
+      <h2 id="articles-heading">Most Recent Articles</h2>
+      <a class="scroller-next" href="/articles/" aria-label="All articles">&#9654;</a>
+    </div>
+
+    <ul class="cards">
+      {articles.map((article) => <Card article={article} />)}
+    </ul>
+  </section>
+
+  <section id="about" class="about" aria-labelledby="about-heading">
+    <h2 id="about-heading">About Us</h2>
+    <p>A novel broad-front antiwar coalition based in Wisconsin. Learn more: <a href="https://acp.us">https://acp.us</a></p>
+  </section>
+</Base>

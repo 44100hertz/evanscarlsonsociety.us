@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 # Publish the generated site to the gh-pages branch. Source lives on master.
 #
-#   tools/deploy.sh
+#   tools/deploy.sh            build, check, publish
+#   tools/deploy.sh build      just the build (CI runs the stages separately so a
+#   tools/deploy.sh check      failure is attributable from the public steps API)
+#   tools/deploy.sh publish
 #
 # gh-pages is a single throwaway commit, force-pushed every time — everything in
 # it is derived, so it carries no history. History belongs on master.
@@ -12,16 +15,19 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-# CI runs the stages as separate steps (so a failure is attributable from the
-# public steps API); locally the default is all three.
 stage="${1:-all}"
+branch="gh-pages"
 
 if [ "$stage" = all ] || [ "$stage" = build ]; then
-    python3 tools/build.py
+    pnpm exec astro build
+    printf '%s\n' evanscarlsonsociety.us > _build/CNAME
+    : > _build/.nojekyll
 fi
+
 if [ "$stage" = all ] || [ "$stage" = check ]; then
-    python3 check.py          # refuses to publish a site with dangling links
+    node tools/check.mjs
 fi
+
 [ -f _build/index.html ] || { echo "build produced no index.html" >&2; exit 1; }
 
 name="$(git config user.name || true)"
@@ -32,7 +38,6 @@ else
     remote="$(git remote get-url origin)"
 fi
 wt="$(mktemp -d)"
-branch="gh-pages"
 
 cleanup() { git worktree remove --force "$wt" 2>/dev/null || rm -rf "$wt"; }
 trap cleanup EXIT

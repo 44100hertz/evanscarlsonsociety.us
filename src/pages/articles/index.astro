@@ -1,0 +1,17 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Card from '../../components/Card.astro';
+import { byNewest } from '../../lib/format.js';
+
+const articles = (await getCollection('articles')).sort(byNewest);
+---
+
+<Base title="Articles — The Evans Carlson Society" description="Every article.">
+  <section aria-labelledby="all-heading">
+    <div class="section-head"><h2 id="all-heading">Articles</h2></div>
+    <ul class="cards cards--grid">
+      {articles.map((article) => <Card article={article} />)}
+    </ul>
+  </section>
+</Base>
