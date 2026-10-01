@@ -3,8 +3,12 @@
 #
 #   tools/deploy.sh
 #
-# gh-pages is a single throwaway commit — force-pushed, no shared history with
-# master — because every byte in it is derived. History belongs on master.
+# gh-pages is a single throwaway commit, force-pushed every time — everything in
+# it is derived, so it carries no history. History belongs on master.
+#
+# The push happens from a detached worktree of *this* repository, not from a
+# scratch repo, so it inherits the origin URL and whatever credentials the
+# environment already has (SSH locally, actions/checkout's token in CI).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -12,14 +16,20 @@ python3 tools/build.py
 python3 check.py          # refuses to publish a site with dangling links
 [ -f _build/index.html ] || { echo "build produced no index.html" >&2; exit 1; }
 
-remote="$(git remote get-url origin)"
 name="$(git config user.name || true)"
 email="$(git config user.email || true)"
+wt="$(mktemp -d)"
+branch="gh-pages"
 
-cd _build
-git init -q -b gh-pages
-git add -A
-git -c user.name="${name:-site build}" -c user.email="${email:-site-build@localhost}" \
+cleanup() { git worktree remove --force "$wt" 2>/dev/null || rm -rf "$wt"; }
+trap cleanup EXIT
+
+git worktree add -f --detach "$wt" >/dev/null
+find "$wt" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+cp -a _build/. "$wt"/
+git -C "$wt" add -A
+git -C "$wt" -c user.name="${name:-site build}" -c user.email="${email:-site-build@localhost}" \
     commit -qm "Publish $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-git push -q -f "$remote" gh-pages:gh-pages
-echo "published $(git log -1 --format=%h) to gh-pages ($(git rev-list --count HEAD) commit)"
+git -C "$wt" push -q -f origin "HEAD:refs/heads/$branch"
+
+echo "published $(git -C "$wt" log -1 --format=%h) to $branch"
