@@ -13,6 +13,9 @@ const { title, description } = Astro.props;
   <meta name="description" content={description}>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" as="image" href="/assets/portrait.webp" type="image/webp">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Asar&family=Noto+Serif&display=swap">
   <script is:inline>
     try {
       if (localStorage.getItem('ecs-theme') === 'night') {
@@ -25,23 +28,18 @@ const { title, description } = Astro.props;
 
 <header class="masthead wrap">
   <div class="masthead-top">
-    <div class="brand-block">
-      <a class="brand" href="/">
-        <picture>
-          <source srcset="/assets/portrait.webp" type="image/webp">
-          <img src="/assets/portrait.jpg" width="330" height="579" alt="Evans Carlson">
-        </picture>
+    <a class="brand" href="/">
+      <picture>
+        <source srcset="/assets/portrait.webp" type="image/webp">
+        <img src="/assets/portrait.jpg" width="330" height="579" alt="Evans Carlson">
+      </picture>
+      <span class="brand-swap">
         <span class="brand-name">The<br>Evans Carlson<br>Society</span>
-      </a>
-      <div class="theme-menu" id="theme-menu">
-        <p class="theme-title">Choose Theme</p>
-        <p><button type="button" data-theme-choice="paper" aria-pressed="true">Paper</button>
-          &middot;
-          <button type="button" data-theme-choice="night" aria-pressed="false">Night</button></p>
-      </div>
-    </div>
+        <span class="brand-theme" aria-hidden="true">Choose Theme</span>
+      </span>
+    </a>
 
-    <button type="button" class="theme-toggle" aria-expanded="false" aria-controls="theme-menu" title="Choose theme">
+    <button type="button" class="theme-toggle" aria-expanded="false" aria-controls="site-nav" title="Choose theme">
       <svg viewBox="0 0 40 46" aria-hidden="true">
         <rect x="8" y="2" width="6" height="18"/>
         <rect x="17" y="2" width="6" height="18"/>
@@ -51,8 +49,13 @@ const { title, description } = Astro.props;
     </button>
   </div>
 
-  <nav class="site-nav" aria-label="Site">
-    <a href="/">Home</a><span class="sep">&middot;</span><a href="/articles/">Articles</a><span class="sep">&middot;</span><a href="/#about">About</a>
+  <nav class="site-nav" id="site-nav" aria-label="Site">
+    <a class="nav-home" href="/">Home &middot; Articles &middot; About</a>
+    <span class="nav-theme">
+      <button type="button" data-theme-choice="paper" aria-pressed="true">Paper</button>
+      &nbsp;&middot;&nbsp;
+      <button type="button" data-theme-choice="night" aria-pressed="false">Night</button>
+    </span>
   </nav>
 
   <div class="rule" role="presentation"></div>

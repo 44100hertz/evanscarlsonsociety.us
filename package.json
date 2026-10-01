@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "astro dev",
     "sync": "node tools/sync.mjs",
     "build": "astro build",
     "check": "node tools/check.mjs",

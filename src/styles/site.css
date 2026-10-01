@@ -1,19 +1,22 @@
-/* The Evans Carlson Society — paper and night themes. No build step. */
+/* The Evans Carlson Society — paper and night themes. No build step.
+   Type per the mockup: Noto Serif for display, Asar for body. All sizes are
+   em so everything scales with the fluid body font-size. */
 :root {
   --bg: #ffffff;
-  --fg: #121212;
-  --muted: #6b6b6b;
-  --accent: #d62420;
-  --rule: #d62420;
+  --fg: #1a1a1a;
+  --muted: #808080;
+  --accent: #b72420;
+  --rule: #b72420;
   --line: #e0e0e0;
-  --portrait-w: 8rem;
-  --serif: Georgia, "Iowan Old Style", "Palatino Linotype", Palatino, "Times New Roman", serif;
+  --portrait-w: 6em;
+  --display: "Noto Serif", Georgia, "Times New Roman", serif;
+  --text: Asar, Georgia, "Times New Roman", serif;
 }
 
 [data-theme="night"] {
   --bg: #000000;
-  --fg: #f0e6c8;
-  --muted: #b9ac8a;
+  --fg: #ffc3a5;
+  --muted: #bd9f85;
   --accent: #cf2420;
   --rule: #cf2420;
   --line: #3a2a20;
@@ -27,9 +30,9 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--fg);
-  font-family: var(--serif);
-  font-size: 1.0625rem;
-  line-height: 1.6;
+  font-family: var(--text);
+  font-size: clamp(1.0625rem, 0.75rem + 0.75vw, 1.5rem);
+  line-height: 1.5;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -42,21 +45,19 @@ a:hover { color: var(--accent); }
 .wrap { max-width: 62rem; margin: 0 auto; padding: 0 1.25rem; }
 
 /* ---------- masthead ---------- */
-.masthead { padding-top: 1.25rem; }
+.masthead { padding-top: 1.5em; }
 
 .masthead-top {
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: end;
-  gap: 1rem;
+  gap: 1em;
 }
-
-.brand-block { position: relative; }
 
 .brand {
   display: flex;
   align-items: flex-end;
-  gap: 1.25rem;
+  gap: 1.25em;
   text-decoration: none;
   color: inherit;
 }
@@ -67,40 +68,22 @@ a:hover { color: var(--accent); }
   display: block;
 }
 
+/* Brand text and its "Choose Theme" replacement are stacked in one grid
+   cell, so the swap is a pure crossfade — no layout shift. */
+.brand-swap { display: grid; align-items: end; }
+.brand-swap > span {
+  grid-area: 1 / 1;
+  transition: opacity 0.25s ease, visibility 0.25s;
+}
 .brand-name {
-  font-size: 2.1rem;
+  font-size: 1.6em;
   line-height: 1.08;
   letter-spacing: 0.01em;
-  display: block;
 }
+.brand-theme { font-size: 1.6em; opacity: 0; visibility: hidden; }
 
-.theme-menu {
-  position: absolute;
-  inset: 0 0 0 calc(var(--portrait-w) + 1.25rem);
-  display: none;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 0.15rem;
-  background: var(--bg);
-  font-size: 2.1rem;
-  line-height: 1.08;
-}
-
-.masthead.choosing .theme-menu { display: flex; }
-.masthead.choosing .brand-name { visibility: hidden; }
-
-.theme-menu .theme-title { margin: 0 0 0.1rem; }
-
-.theme-menu button {
-  font: inherit;
-  color: var(--accent);
-  background: none;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-  text-decoration: underline;
-}
-.theme-menu button[aria-pressed="true"] { color: var(--fg); text-decoration: none; }
+.choosing .brand-name { opacity: 0; visibility: hidden; }
+.choosing .brand-theme { opacity: 1; visibility: visible; }
 
 .theme-toggle {
   background: none;
@@ -110,21 +93,45 @@ a:hover { color: var(--accent); }
   color: var(--accent);
   line-height: 0;
 }
-.theme-toggle svg { height: 9rem; width: auto; fill: currentColor; }
+.theme-toggle svg { height: 8em; width: auto; fill: currentColor; }
 
+/* Nav links and the theme selector share one cell the same way. */
 .site-nav {
+  display: grid;
+  justify-items: center;
   text-align: center;
-  font-size: 1.3rem;
-  padding: 1.4rem 0 0.6rem;
+  font-size: 1.4em;
+  padding: 0.9em 0 0.5em;
+}
+.site-nav > * {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+  transition: opacity 0.25s ease, visibility 0.25s;
 }
 .site-nav a { text-decoration: none; }
-.site-nav .sep { padding: 0 0.6rem; color: var(--muted); }
+.nav-theme { opacity: 0; visibility: hidden; }
+.nav-theme button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.nav-theme button[aria-pressed="true"] {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.choosing .nav-home { opacity: 0; visibility: hidden; }
+.choosing .nav-theme { opacity: 1; visibility: visible; }
 
 .rule {
   border-top: 2px solid var(--rule);
   height: 4px;
   box-shadow: 0 4px 0 -2px var(--rule);
-  margin-bottom: 2.25rem;
+  margin-bottom: 2em;
 }
 
 /* ---------- homepage ---------- */
@@ -132,40 +139,41 @@ a:hover { color: var(--accent); }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  margin: 2.5rem 0 1rem;
+  gap: 1em;
+  margin: 2em 0 0.8em;
 }
-.section-head h2 { font-size: 1.7rem; font-weight: 400; margin: 0; }
+.section-head h2 { font-family: var(--display); font-size: 1.5em; font-weight: 400; margin: 0; }
 
 .scroller-next {
-  width: 2.6rem;
-  height: 2.6rem;
+  width: 2.4em;
+  height: 2.4em;
   border-radius: 50%;
   border: 0;
   background: #cccccc;
   color: #ffffff;
-  font-size: 1rem;
+  font-size: 1em;
   cursor: pointer;
   flex: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  text-decoration: none;
   line-height: 1;
+  padding: 0 0 0 0.2em;
 }
 [data-theme="night"] .scroller-next { background: #3a3a3a; }
 
 .cards {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(12rem, 1fr);
-  gap: 1.5rem;
+  grid-auto-columns: minmax(13em, 1fr);
+  gap: 1.5em;
   overflow-x: auto;
-  scroll-behavior: smooth;
+  scrollbar-width: none;
   list-style: none;
   margin: 0;
   padding: 0 0 0.5rem;
 }
+.cards::-webkit-scrollbar { display: none; }
 
 .card a { text-decoration: none; }
 .card img {
@@ -174,54 +182,42 @@ a:hover { color: var(--accent); }
   aspect-ratio: 3 / 2;
   object-fit: cover;
   display: block;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.5em;
 }
-.card h3 { font-size: 1.1rem; font-weight: 400; margin: 0 0 0.25rem; }
-.card .byline { color: var(--muted); font-size: 0.95rem; margin: 0; }
-.cards--grid {
-  grid-auto-flow: row;
-  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
-  overflow: visible;
-}
+.card h3 { font-size: 1em; font-weight: 400; margin: 0 0 0.2em; }
+.card .byline { color: var(--muted); font-size: 0.85em; margin: 0; }
 
-.about { margin: 2.5rem 0 4rem; }
-.about h2 { font-size: 1.7rem; font-weight: 400; margin: 0 0 0.4rem; }
+.about { margin: 2.5em 0 4em; }
+.about h2 { font-family: var(--display); font-size: 1.5em; font-weight: 400; margin: 0 0 0.4em; }
 .about p { max-width: 40em; margin: 0; }
 
 /* ---------- article ---------- */
-.article-head { text-align: center; margin: 0 0 1.75rem; }
+.article-head { text-align: center; margin: 0 0 1.5em; }
 .article-head h1 {
-  font-size: 2.6rem;
+  font-family: var(--display);
+  font-size: 2em;
   font-weight: 400;
   line-height: 1.15;
   max-width: 20em;
-  margin: 0 auto 0.5rem;
+  margin: 0 auto 0.4em;
 }
-.deck {
-  color: var(--muted);
-  font-size: 1.15rem;
-  max-width: 26em;
-  margin: 0 auto 0.65rem;
-}
-.source { color: var(--muted); font-size: 0.9rem; }
+.deck { color: var(--muted); font-size: 1.1em; max-width: 26em; margin: 0 auto 0.5em; }
+.source { color: var(--muted); font-size: 0.8em; }
 .byline { color: var(--muted); margin: 0; }
 .byline a { text-decoration: none; }
 
-.article-figure { max-width: 34em; margin: 0 auto 2rem; }
+.article-figure { max-width: 40em; margin: 0 auto 2em; }
 .article-figure img { width: 100%; height: auto; display: block; }
-.article-figure figcaption { color: var(--muted); font-size: 0.9rem; padding-top: 0.4rem; }
+.article-figure figcaption { color: var(--muted); font-size: 0.8em; padding-top: 0.4em; }
 
-.article-body { max-width: 34em; margin: 0 auto 1.5rem; }
-.article-body p { margin: 0 0 1.25rem; }
-
-@media (min-width: 1200px) {
-  .article-body, .article-figure { max-width: 40em; }
-  .article-head h1 { font-size: 3rem; }
-}
+.article-body { max-width: 40em; margin: 0 auto 1.5em; }
+.article-body p { margin: 0 0 1.25em; }
 
 @media (max-width: 720px) {
-  .brand-name, .theme-menu { font-size: 1.5rem; }
-  .theme-toggle svg { height: 6rem; }
-  .site-nav { font-size: 1.1rem; }
-  .article-head h1 { font-size: 1.9rem; }
+  :root { --portrait-w: 6.5em; }
+  .theme-toggle svg { height: 7em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-swap > span, .site-nav > * { transition: none; }
 }

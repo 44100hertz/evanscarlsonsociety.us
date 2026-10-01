@@ -11,7 +11,7 @@ with *"…rebuild the gh-pages"*). Nothing on `master` is served directly.
 
 ## Layout
 
-    src/pages/            routes: /, /articles/, /articles/<slug>/
+    src/pages/            routes: /, /articles/<slug>/
     src/layouts/Base.astro    the masthead, nav, <head>, theme bootstrap
     src/components/       Card.astro
     src/content/articles/ one JSON per article, written by `pnpm sync`
@@ -61,16 +61,27 @@ validates it with a zod schema.
 
 ## Themes
 
-The star in the masthead opens the theme chooser (`Paper` / `Night`). The
-choice is kept in `localStorage` and applied before first paint. Night theme
-darkens images via CSS `filter` (opt an image out with `class="no-dim"`).
-Header scrolls away normally — deliberately no return-to-top button.
+The star in the masthead opens the theme chooser: the brand text crossfades to
+"Choose Theme" and "Home · Articles · About" crossfades to "Paper · Night"
+(one grid cell per slot, so nothing shifts). The choice is kept in
+`localStorage` and applied before first paint; `site.js` only overrides the
+server default when a choice is stored. Night theme darkens images via CSS
+`filter` (opt an image out with `class="no-dim"`). Header scrolls away
+normally — deliberately no return-to-top button.
+
+## Type
+
+Noto Serif (display: masthead, headings) and Asar (body), both from Google
+Fonts, per the mockup. Every size on the page is `em` off one fluid body
+`font-size: clamp(...)`, so the whole page scales with the viewport; the
+article column is capped at 40em per the mockup's measure note.
 
 ## Notes and gaps
 
 - URLs are `/articles/<slug>/`. They were `/articles/<slug>.html` for the first
   few minutes the domain was live; Astro's directory format is the default and
-  worth the change, but nothing redirects the old shape.
+  worth the change, but nothing redirects the old shape. The standalone
+  `/articles/` index was removed — the homepage scroller holds every article.
 - Byline is "Grant Klusmann" (the site's wording); his Substack byline is
   "Grant K.". It is set by `AUTHOR` in `tools/sync.mjs`.
 - "The Arab World's Only Marxist-Leninist State" is subscriber-only on

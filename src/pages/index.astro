@@ -4,7 +4,7 @@ import Base from '../layouts/Base.astro';
 import Card from '../components/Card.astro';
 import { byNewest } from '../lib/format.js';
 
-const articles = (await getCollection('articles')).sort(byNewest).slice(0, 6);
+const articles = (await getCollection('articles')).sort(byNewest);
 ---
 
 <Base title="The Evans Carlson Society"
@@ -12,7 +12,7 @@ const articles = (await getCollection('articles')).sort(byNewest).slice(0, 6);
   <section id="articles" aria-labelledby="articles-heading">
     <div class="section-head">
       <h2 id="articles-heading">Most Recent Articles</h2>
-      <a class="scroller-next" href="/articles/" aria-label="All articles">&#9654;</a>
+      <button type="button" class="scroller-next" aria-label="Show more articles">&#9654;</button>
     </div>
 
     <ul class="cards">
