@@ -13,16 +13,19 @@ import html
 import json
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
 from html.parser import HTMLParser
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CONTENT = ROOT / "content"
-COVERS = ROOT / "assets" / "covers"
-ARTICLES = ROOT / "articles"
+SRC = ROOT / "site"              # hand-authored source assets + committed covers
+OUT = ROOT / "_build"            # generated site; tools/deploy.sh pushes this to gh-pages
+COVERS = SRC / "assets" / "covers"
 
 SITE = "The Evans Carlson Society"
+DOMAIN = "evanscarlsonsociety.us"
 AUTHOR = "Grant Klusmann"
 ABOUT = 'A novel broad-front antiwar coalition based in Wisconsin. Learn more: <a href="https://acp.us">https://acp.us</a>'
 HOMEPAGE_CARDS = 6
@@ -125,20 +128,24 @@ def dimensions(path):
 
 
 def cover(slug, url):
-    """Download, prescale to full + thumb, and report dimensions for both."""
-    COVERS.mkdir(parents=True, exist_ok=True)
-    src = CONTENT / "covers" / f"{slug}.orig"
-    fetch(url, src)
-    result = {}
-    for name, width, quality in (("full", 1024, 68), ("thumb", 480, 68)):
-        for ext in ("webp", "jpg"):
-            out = COVERS / f"{slug}-{name}.{ext}"
-            cmd = ["magick", str(src), "-resize", f"{width}x>", "-strip", "-quality", str(quality)]
-            if ext == "webp":
-                cmd += ["-define", "webp:method=6"]
-            subprocess.run(cmd + [str(out)], check=True)
-        result[name] = dimensions(COVERS / f"{slug}-{name}.webp")
-    return result
+    """Prescale to full + thumb once, then report dimensions from the committed files.
+
+    Skipping the conversion when the files exist keeps the build reproducible on a
+    machine without ImageMagick (CI, say) as long as the covers are committed.
+    """
+    want = [COVERS / f"{slug}-{name}.{ext}"
+            for name in ("full", "thumb") for ext in ("webp", "jpg")]
+    if not all(p.exists() for p in want):
+        COVERS.mkdir(parents=True, exist_ok=True)
+        src = CONTENT / "covers" / f"{slug}.orig"
+        fetch(url, src)
+        for name, width, quality in (("full", 1024, 68), ("thumb", 480, 68)):
+            for ext in ("webp", "jpg"):
+                cmd = ["magick", str(src), "-resize", f"{width}x>", "-strip", "-quality", str(quality)]
+                if ext == "webp":
+                    cmd += ["-define", "webp:method=6"]
+                subprocess.run(cmd + [str(COVERS / f"{slug}-{name}.{ext}")], check=True)
+    return {name: dimensions(COVERS / f"{slug}-{name}.webp") for name in ("full", "thumb")}
 
 
 def picture(srcset, src, w, h, cls=""):
@@ -278,6 +285,12 @@ def main():
         })
     posts.sort(key=lambda p: p["date"], reverse=True)
 
+    if OUT.exists():
+        shutil.rmtree(OUT)
+    shutil.copytree(SRC, OUT)
+    (OUT / "CNAME").write_text(DOMAIN + "\n")
+    (OUT / ".nojekyll").write_text("")
+    ARTICLES = OUT / "articles"
     ARTICLES.mkdir(exist_ok=True)
     written = set()
     for post in posts:
@@ -305,7 +318,7 @@ def main():
     <h2 id="about-heading">About Us</h2>
     <p>{ABOUT}</p>
   </section>"""
-    (ROOT / "index.html").write_text(page(SITE, "Articles and dispatches from the Evans Carlson Society.", home))
+    (OUT / "index.html").write_text(page(SITE, "Articles and dispatches from the Evans Carlson Society.", home))
 
     every = "\n".join(card(p) for p in posts)
     index = f"""  <section aria-labelledby="all-heading">
@@ -316,7 +329,7 @@ def main():
   </section>"""
     (ARTICLES / "index.html").write_text(page(f"Articles — {SITE}", "Every article.", index))
 
-    print(f"built {len(posts)} articles, {len(written)} pages")
+    print(f"built {len(posts)} articles into {OUT.relative_to(ROOT)}/")
     return 0
 
 

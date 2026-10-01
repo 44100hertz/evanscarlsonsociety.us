@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
-"""Static self-check: every local link, stylesheet, script and image resolves."""
-import pathlib, re, sys
+"""Static self-check: build the site, then verify every local link resolves.
 
-ROOT = pathlib.Path(__file__).parent
-PAGES = sorted(ROOT.rglob("*.html"))
+    python3 check.py
+"""
+import pathlib
+import re
+import subprocess
+import sys
+
+ROOT = pathlib.Path(__file__).resolve().parent
+BUILD = ROOT / "_build"
 ATTR = re.compile(r'(?:href|src|srcset)\s*=\s*"([^"]+)"')
 SKIP = ("http://", "https://", "mailto:", "data:")
 
@@ -17,18 +23,27 @@ def targets(page):
 
 
 def main():
+    if not BUILD.exists():
+        print("no _build/ — running tools/build.py")
+        subprocess.run([sys.executable, str(ROOT / "tools" / "build.py")], check=True)
+
+    pages = sorted(BUILD.rglob("*.html"))
+    if not pages:
+        print("BROKEN: _build/ has no pages")
+        return 1
+
     bad = []
-    # root-relative paths (/assets/x) resolve against the site root, like GitHub Pages.
-    resolver = lambda u: ROOT / u.lstrip("/") if u.startswith("/") else ROOT / u
-    for page in PAGES:
+    # Root-relative paths (/assets/x) resolve against the deployed site root.
+    resolver = lambda u: BUILD / u.lstrip("/") if u.startswith("/") else BUILD / u
+    for page in pages:
         for url in targets(page):
             if not resolver(url).exists():
-                bad.append(f"{page.relative_to(ROOT)} -> {url}")
+                bad.append(f"{page.relative_to(BUILD)} -> {url}")
 
     if bad:
         print("BROKEN:\n  " + "\n  ".join(bad))
         return 1
-    print(f"OK: {len(PAGES)} page(s), all local links resolve.")
+    print(f"OK: {len(pages)} page(s) in _build/, all local links resolve.")
     return 0
 
 

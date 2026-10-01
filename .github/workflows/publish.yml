@@ -1,0 +1,27 @@
+name: Publish
+
+# Source on master, generated site on gh-pages — that is where Pages serves from.
+# tools/deploy.sh does the actual work, so the local and CI paths cannot drift.
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gh-pages
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and push gh-pages
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          bash tools/deploy.sh
