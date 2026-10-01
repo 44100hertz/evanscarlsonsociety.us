@@ -135,10 +135,9 @@ a:hover { color: var(--accent); }
 
 /* Triple rule: two borders with a middle line drawn by the background. */
 .rule {
-  height: 9px;
+  height: 7px;
   border-top: 2px solid var(--rule);
   border-bottom: 2px solid var(--rule);
-  background: linear-gradient(var(--rule), var(--rule)) center / 100% 2px no-repeat;
   margin-bottom: 2em;
 }
 
@@ -197,12 +196,12 @@ a:hover { color: var(--accent); }
 .card h3 { font-size: 1em; font-weight: 400; margin: 0 0 0.2em; }
 .card .byline { color: var(--muted); font-size: 0.85em; margin: 0; }
 
-.about { text-align: center; margin: 1.5em 0 3.5em; }
+.about { text-align: center; margin: 1.5em 0 2em; }
 .about h2 { font-family: var(--display); font-size: 1.5em; font-weight: 400; margin: 0 0 0.4em; }
 .about p { max-width: 40em; margin: 0 auto; }
 
 /* ---------- article ---------- */
-.article-head { text-align: center; margin: 0; }
+.article-head { text-align: center; margin: 0 0 2em; }
 .article-head h1 {
   font-family: var(--display);
   font-size: 2em;
