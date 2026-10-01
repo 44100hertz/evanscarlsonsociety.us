@@ -23,6 +23,7 @@ CONTENT = ROOT / "content"
 SRC = ROOT / "site"              # hand-authored source assets + committed covers
 OUT = ROOT / "_build"            # generated site; tools/deploy.sh pushes this to gh-pages
 COVERS = SRC / "assets" / "covers"
+DIMS_FILE = COVERS / "dimensions.json"   # logged by the build, see mockup text81
 
 SITE = "The Evans Carlson Society"
 DOMAIN = "evanscarlsonsociety.us"
@@ -128,24 +129,31 @@ def dimensions(path):
 
 
 def cover(slug, url):
-    """Prescale to full + thumb once, then report dimensions from the committed files.
+    """Prescale to full + thumb once, then report dimensions from dimensions.json.
 
-    Skipping the conversion when the files exist keeps the build reproducible on a
-    machine without ImageMagick (CI, say) as long as the covers are committed.
+    The dimensions are logged at generation time and committed, so a machine
+    without ImageMagick (CI, say) can rebuild the site from the committed
+    covers without shelling out to `identify`.
     """
     want = [COVERS / f"{slug}-{name}.{ext}"
             for name in ("full", "thumb") for ext in ("webp", "jpg")]
-    if not all(p.exists() for p in want):
-        COVERS.mkdir(parents=True, exist_ok=True)
-        src = CONTENT / "covers" / f"{slug}.orig"
-        fetch(url, src)
-        for name, width, quality in (("full", 1024, 68), ("thumb", 480, 68)):
-            for ext in ("webp", "jpg"):
-                cmd = ["magick", str(src), "-resize", f"{width}x>", "-strip", "-quality", str(quality)]
-                if ext == "webp":
-                    cmd += ["-define", "webp:method=6"]
-                subprocess.run(cmd + [str(COVERS / f"{slug}-{name}.{ext}")], check=True)
-    return {name: dimensions(COVERS / f"{slug}-{name}.webp") for name in ("full", "thumb")}
+    logged = json.loads(DIMS_FILE.read_text()) if DIMS_FILE.exists() else {}
+    if all(p.exists() for p in want) and slug in logged:
+        return {name: tuple(logged[slug][name]) for name in ("full", "thumb")}
+
+    COVERS.mkdir(parents=True, exist_ok=True)
+    src = CONTENT / "covers" / f"{slug}.orig"
+    fetch(url, src)
+    for name, width, quality in (("full", 1024, 68), ("thumb", 480, 68)):
+        for ext in ("webp", "jpg"):
+            cmd = ["magick", str(src), "-resize", f"{width}x>", "-strip", "-quality", str(quality)]
+            if ext == "webp":
+                cmd += ["-define", "webp:method=6"]
+            subprocess.run(cmd + [str(COVERS / f"{slug}-{name}.{ext}")], check=True)
+    logged[slug] = {name: list(dimensions(COVERS / f"{slug}-{name}.webp"))
+                    for name in ("full", "thumb")}
+    DIMS_FILE.write_text(json.dumps(logged, indent=1, sort_keys=True) + "\n")
+    return {name: tuple(logged[slug][name]) for name in ("full", "thumb")}
 
 
 def picture(srcset, src, w, h, cls=""):
