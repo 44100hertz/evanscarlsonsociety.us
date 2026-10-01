@@ -12,8 +12,16 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-python3 tools/build.py
-python3 check.py          # refuses to publish a site with dangling links
+# CI runs the stages as separate steps (so a failure is attributable from the
+# public steps API); locally the default is all three.
+stage="${1:-all}"
+
+if [ "$stage" = all ] || [ "$stage" = build ]; then
+    python3 tools/build.py
+fi
+if [ "$stage" = all ] || [ "$stage" = check ]; then
+    python3 check.py          # refuses to publish a site with dangling links
+fi
 [ -f _build/index.html ] || { echo "build produced no index.html" >&2; exit 1; }
 
 name="$(git config user.name || true)"

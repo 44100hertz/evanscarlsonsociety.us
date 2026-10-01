@@ -1,7 +1,9 @@
 name: Publish
 
 # Source on master, generated site on gh-pages — that is where Pages serves from.
-# tools/deploy.sh does the actual work, so the local and CI paths cannot drift.
+# tools/deploy.sh does the actual work for every stage below, so the local and CI
+# paths cannot drift; CI just calls the stages one at a time so that a failure is
+# attributable from the public steps API.
 
 on:
   push:
@@ -23,21 +25,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build, check and push gh-pages
-        run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          set -o pipefail
-          bash tools/deploy.sh 2>&1 | tee "$RUNNER_TEMP/publish.log"
+      - name: Build
+        run: bash tools/deploy.sh build
 
-      # Logs need a token to read, but the job summary is public. On failure,
-      # dump the tail here so the run page explains itself.
-      - name: Show failure
-        if: failure()
-        run: |
-          {
-            echo '### Publish failed'
-            echo '```'
-            tail -40 "$RUNNER_TEMP/publish.log" 2>/dev/null || echo '(no output captured)'
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Check links
+        run: bash tools/deploy.sh check
+
+      - name: Push gh-pages
+        run: bash tools/deploy.sh publish
