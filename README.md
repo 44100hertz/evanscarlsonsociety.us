@@ -11,13 +11,13 @@ with *"…rebuild the gh-pages"*). Nothing on `master` is served directly.
 
 ## Layout
 
-    src/pages/            routes: /, /articles/<slug>/
+    src/pages/            routes: /, /articles/, /articles/<slug>/
     src/layouts/Base.astro    the masthead, nav, <head>, theme bootstrap
-    src/components/       Card.astro
+    src/components/       Card.astro, Scroller.astro, icons/
     src/content/articles/ one JSON per article, written by `pnpm sync`
     src/styles/site.css   paper + night themes
-    src/scripts/site.js   theme chooser, scroller
-    public/assets/        served as-is: portrait, favicon, cover images
+    src/scripts/site.js   theme toggle, print button, scroller
+    public/assets/        served as-is: portrait, favicon, covers, qr.svg
     tools/sync.mjs        fetch + sanitise Substack, prescale covers
     tools/check.mjs       verify every local link in _build/ resolves
     tools/deploy.sh       build, check, force-push _build/ to gh-pages
@@ -61,13 +61,30 @@ validates it with a zod schema.
 
 ## Themes
 
-The star in the masthead opens the theme chooser: the brand text crossfades to
-"Choose Theme" and "Home · Articles · About" crossfades to "Paper · Night"
-(one grid cell per slot, so nothing shifts). The choice is kept in
-`localStorage` and applied before first paint; `site.js` only overrides the
-server default when a choice is stored. Night theme darkens images via CSS
-`filter` (opt an image out with `class="no-dim"`). Header scrolls away
-normally — deliberately no return-to-top button.
+The Marine Corps badge in the masthead is decorative now (it used to open the
+chooser). The theme toggle and print button float, background-free, under the
+right end of the triple rule: they are absolutely positioned inside that rule's
+margin, so they add no height to the masthead. Both are Famicons outline
+glyphs (MIT); the theme toggle shows the sun while paper is active and the moon
+while night is active — both icons are always in the markup and CSS reveals one
+off `[data-theme]`, so `site.js` only flips the attribute, stores the choice in
+`localStorage` and retitles the button. The choice is
+applied before first paint by the inline bootstrap in `Base.astro`; `site.js`
+only overrides the server default when a choice is stored. Night theme darkens
+images via CSS `filter` (opt an image out with `class="no-dim"`). Header
+scrolls away normally — deliberately no return-to-top button.
+
+## Print
+
+Printing has its own layout (`@media print` at the end of `site.css`) and ignores
+the screen theme: paper colours, the masthead as usual minus the floating theme
+and print controls, the nav line replaced by `https://EvansCarlsonSociety.us`,
+the article on its own (the scroller, its arrows and the "Top of page" link drop
+out), covers capped at 95mm tall, and a closing footer — italic "Read more at
+https://EvansCarlsonSociety.us" plus a QR code — at the end of the document. The
+QR code is `public/assets/qr.svg`, generated once with qrencode (version 3-M) and
+decodes to the site root. On screen the same cover cap is 72vh, so a near-square
+or portrait cover cannot swallow the viewport.
 
 ## Type
 
@@ -80,8 +97,11 @@ article column is capped at 40em per the mockup's measure note.
 
 - URLs are `/articles/<slug>/`. They were `/articles/<slug>.html` for the first
   few minutes the domain was live; Astro's directory format is the default and
-  worth the change, but nothing redirects the old shape. The standalone
-  `/articles/` index was removed — the homepage scroller holds every article.
+  worth the change, but nothing redirects the old shape. `/articles/` is a plain
+  newest-first grid of the same collection the homepage scroller holds.
+- `icons.svg` at the repo root is the abandoned hand-drawn icon mockup (day,
+  night, print on a red island). The site uses Famicons outline glyphs now and
+  no longer reads that file; it is untracked.
 - Byline is "Grant Klusmann" (the site's wording); his Substack byline is
   "Grant K.". It is set by `AUTHOR` in `tools/sync.mjs`.
 - "The Arab World's Only Marxist-Leninist State" is subscriber-only on

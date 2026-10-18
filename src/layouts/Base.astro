@@ -1,5 +1,8 @@
 ---
 import '../styles/site.css';
+import SunIcon from '../components/icons/SunIcon.astro';
+import MoonIcon from '../components/icons/MoonIcon.astro';
+import PrintIcon from '../components/icons/PrintIcon.astro';
 
 const { title, description } = Astro.props;
 ---
@@ -33,37 +36,48 @@ const { title, description } = Astro.props;
         <source srcset="/assets/portrait.webp" type="image/webp">
         <img src="/assets/portrait.jpg" width="330" height="579" alt="Evans Carlson">
       </picture>
-      <span class="brand-swap">
-        <span class="brand-name">The<br>Evans Carlson<br>Society</span>
-        <span class="brand-theme" aria-hidden="true">Choose Theme</span>
-      </span>
+      <span class="brand-name">The<br>Evans Carlson<br>Society</span>
     </a>
 
-    <button type="button" class="theme-toggle" aria-expanded="false" aria-controls="site-nav" title="Choose theme">
-      <svg viewBox="0 0 40 46" aria-hidden="true">
+    <span class="masthead-badge" aria-hidden="true">
+      <svg viewBox="0 0 40 46" focusable="false">
         <rect x="8" y="2" width="6" height="18"/>
         <rect x="17" y="2" width="6" height="18"/>
         <rect x="26" y="2" width="6" height="18"/>
         <path d="M20,20 L23.06,27.79 L31.41,28.29 L24.95,33.61 L27.05,41.71 L20,37.2 L12.95,41.71 L15.05,33.61 L8.59,28.29 L16.94,27.79 Z"/>
       </svg>
-    </button>
+    </span>
   </div>
 
-  <nav class="site-nav" id="site-nav" aria-label="Site">
-    <a class="nav-home" href="/">Home &middot; Articles &middot; About</a>
-    <span class="nav-theme">
-      <button type="button" data-theme-choice="paper" aria-pressed="true">Paper</button>
-      &nbsp;&middot;&nbsp;
-      <button type="button" data-theme-choice="night" aria-pressed="false">Night</button>
-    </span>
+  <nav class="site-nav" aria-label="Site">
+    <a href="/">Home</a>
+    <span class="nav-sep" aria-hidden="true">&middot;</span>
+    <a href="/articles/">Articles</a>
   </nav>
 
   <div class="rule" role="presentation"></div>
+
+  <div class="header-tools">
+    <button type="button" class="theme-button" aria-label="Switch to night theme" title="Switch to night theme">
+      <SunIcon />
+      <MoonIcon />
+    </button>
+    <button type="button" class="print-button" aria-label="Print this page" title="Print this page">
+      <PrintIcon />
+    </button>
+  </div>
 </header>
 
 <main class="wrap">
   <slot />
 </main>
+
+<!-- Print only: read more at the site, with a QR code. Hidden on screen. -->
+<footer class="print-footer">
+  <p class="print-footer-line">Read more at https://EvansCarlsonSociety.us</p>
+  <img class="print-qr" src="/assets/qr.svg" width="33" height="33"
+       alt="QR code for evanscarlsonsociety.us">
+</footer>
 
 <script>
   import '../scripts/site.js';

@@ -1,0 +1,22 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Card from '../../components/Card.astro';
+import { byNewest } from '../../lib/format.js';
+
+// Every article in the collection, newest first — no filtering, no cap.
+const articles = (await getCollection('articles')).sort(byNewest);
+---
+
+<Base title="Articles — The Evans Carlson Society"
+      description="Every article published by the Evans Carlson Society, newest first.">
+  <section id="articles" aria-labelledby="articles-heading">
+    <div class="section-head">
+      <h1 id="articles-heading">Articles</h1>
+    </div>
+
+    <ul class="cards cards-index">
+      {articles.map((article) => <Card article={article} />)}
+    </ul>
+  </section>
+</Base>

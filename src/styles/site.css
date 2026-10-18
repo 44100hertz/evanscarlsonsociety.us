@@ -24,7 +24,7 @@
   --line: #333333;
 }
 
-.brand-name, .section-head h2, .about h2, .article-head h1, .card h3 {
+.brand-name, .section-head h1, .section-head h2, .about h2, .article-head h1, .card h3 {
   color: var(--heading);
 }
 
@@ -45,18 +45,18 @@ body {
 a { color: inherit; }
 a:hover { color: var(--accent); }
 
-/* Night theme darkens overly bright images (spec: star/night behaviour). */
+/* Night theme darkens overly bright images. */
 [data-theme="night"] img:not(.no-dim) { filter: brightness(0.78) contrast(1.06); }
 
 .wrap { max-width: 62rem; margin: 0 auto; padding: 0 1.25rem; }
 
 /* ---------- masthead ---------- */
-.masthead { padding-top: 1.5em; }
+.masthead { padding-top: 1.5em; position: relative; }
 
 .masthead-top {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: end;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
   gap: 1em;
 }
 
@@ -74,64 +74,31 @@ a:hover { color: var(--accent); }
   display: block;
 }
 
-/* Brand text and its "Choose Theme" replacement are stacked in one grid
-   cell, so the swap is a pure crossfade — no layout shift. */
-.brand-swap { display: grid; align-items: end; }
-.brand-swap > span {
-  grid-area: 1 / 1;
-  transition: opacity 0.25s ease, visibility 0.25s;
-}
 .brand-name {
   font-size: 1.6em;
   line-height: 1.08;
   letter-spacing: 0.01em;
 }
-.brand-theme { font-size: 1.6em; opacity: 0; visibility: hidden; }
 
-.choosing .brand-name { opacity: 0; visibility: hidden; }
-.choosing .brand-theme { opacity: 1; visibility: visible; }
+/* The Marine Corps badge. It used to open the theme chooser; it is decorative
+   now, at exactly the size it always rendered. That size came from a quirk: the
+   old <button> never inherited the page font, so its UA 13.333px font-size made
+   the glyph 8em (7em on small screens) = 6.667rem / 5.833rem, fixed rather than
+   fluid. A <span> would inherit the fluid body size and render ~60% larger. */
+.masthead-badge { line-height: 0; color: var(--accent); }
+.masthead-badge svg { display: block; height: 6.667rem; width: auto; fill: currentColor; }
 
-.theme-toggle {
-  background: none;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-  color: var(--accent);
-  line-height: 0;
-}
-.theme-toggle svg { height: 8em; width: auto; fill: currentColor; }
-
-/* Nav links and the theme selector share one cell the same way. */
+/* Home · Articles, centred at the same type scale as the brand. */
 .site-nav {
-  display: grid;
-  justify-items: center;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 0.4em;
   font-size: 1.4em;
   padding: 0.9em 0 0.5em;
-}
-.site-nav > * {
-  grid-area: 1 / 1;
   white-space: nowrap;
-  transition: opacity 0.25s ease, visibility 0.25s;
 }
 .site-nav a { text-decoration: none; }
-.nav-theme { opacity: 0; visibility: hidden; }
-.nav-theme button {
-  font: inherit;
-  color: inherit;
-  background: none;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-}
-.nav-theme button[aria-pressed="true"] {
-  color: var(--accent);
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
-}
-
-.choosing .nav-home { opacity: 0; visibility: hidden; }
-.choosing .nav-theme { opacity: 1; visibility: visible; }
 
 /* Triple rule: two borders with a middle line drawn by the background. */
 .rule {
@@ -140,6 +107,37 @@ a:hover { color: var(--accent); }
   border-bottom: 2px solid var(--rule);
   margin-bottom: 2em;
 }
+/* Icon controls: theme toggle and print. They float in the rule's margin
+   under its right end — no background, no height of their own, so the masthead
+   measures exactly as it did before they existed. Grey rules, grey icons. */
+.header-tools {
+  position: absolute;
+  right: 1.25rem; /* the .wrap content edge, flush with the rule */
+  top: calc(100% + 0.35em); /* centred in the rule's 2em gap */
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  color: var(--muted);
+}
+.header-tools button {
+  display: block;
+  font: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  line-height: 0;
+  cursor: pointer;
+}
+.header-tools button:hover { color: var(--fg); }
+.header-tools button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.header-tools svg { display: block; height: 1.3em; width: auto; }
+
+/* One theme button, both icons in the DOM: the active theme shows its own.
+   The qualified selectors outrank the sizing rule above. */
+.header-tools svg.theme-icon-moon { display: none; }
+[data-theme="night"] .header-tools svg.theme-icon-sun { display: none; }
+[data-theme="night"] .header-tools svg.theme-icon-moon { display: block; }
 
 /* ---------- homepage ---------- */
 .section-head {
@@ -149,7 +147,13 @@ a:hover { color: var(--accent); }
   gap: 1em;
   margin: 2em 0 0.8em;
 }
-.section-head h2 { grid-column: 2; font-family: var(--display); font-size: 1.5em; font-weight: 400; margin: 0; }
+.section-head h1, .section-head h2 {
+  grid-column: 2;
+  font-family: var(--display);
+  font-size: 1.5em;
+  font-weight: 400;
+  margin: 0;
+}
 .scroller-buttons { grid-column: 3; justify-self: end; display: flex; gap: 0.5em; }
 
 .scroller-prev, .scroller-next {
@@ -184,6 +188,16 @@ a:hover { color: var(--accent); }
 }
 .cards::-webkit-scrollbar { display: none; }
 
+/* The /articles/ index lists the whole collection in rows instead of the
+   homepage's horizontal scroller, reusing the card markup. */
+.cards-index {
+  grid-auto-flow: row;
+  grid-template-columns: repeat(auto-fill, minmax(13em, 1fr));
+  overflow-x: visible;
+  margin: 0 0 2em;
+  padding: 0;
+}
+
 .card a { text-decoration: none; }
 .card img {
   width: 100%;
@@ -216,7 +230,16 @@ a:hover { color: var(--accent); }
 .byline a { text-decoration: none; }
 
 .article-figure { max-width: 40em; margin: 0 auto 2em; }
-.article-figure img { width: 100%; height: auto; display: block; }
+/* Covers run from wide to nearly square (Scott Ritter is 1024x1071), so cap the
+   rendered height: a tall cover otherwise swallows the viewport. The box keeps
+   the column width and the image is letterboxed, centred. */
+.article-figure img {
+  width: 100%;
+  height: auto;
+  max-height: 72vh;
+  object-fit: contain;
+  display: block;
+}
 .article-figure figcaption { color: var(--muted); font-size: 0.8em; padding-top: 0.4em; }
 
 .article-body { max-width: 40em; margin: 0 auto 1.5em; }
@@ -227,9 +250,71 @@ a:hover { color: var(--accent); }
 
 @media (max-width: 720px) {
   :root { --portrait-w: 6.5em; }
-  .theme-toggle svg { height: 7em; }
+  .masthead-badge svg { height: 5.833rem; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .brand-swap > span, .site-nav > * { transition: none; }
+/* ---------- print ---------- */
+/* Printing gets its own layout: paper colours whatever theme is active, the nav
+   line becomes the site address, the floating controls and the scroller drop
+   out, covers are capped so a tall one cannot eat the page, and a footer with a
+   QR code closes the sheet. */
+.print-footer { display: none; }
+
+@page { margin: 14mm 12mm; }
+
+@media print {
+  :root,
+  [data-theme="night"] {
+    --bg: #ffffff;
+    --fg: #1a1a1a;
+    --heading: #1a1a1a;
+    --muted: #555555;
+    --accent: #b72420;
+    --rule: #b72420;
+    --line: #dddddd;
+  }
+
+  html, body { background: #ffffff; }
+  body { font-size: 11pt; line-height: 1.45; }
+  [data-theme="night"] img:not(.no-dim) { filter: none; }
+
+  .wrap { max-width: none; padding: 0; }
+
+  /* Header: the masthead as usual, without the floating controls; the nav line
+     is the site address instead. */
+  .masthead { padding-top: 0; break-inside: avoid; }
+  .header-tools { display: none; }
+  .site-nav a, .site-nav .nav-sep { display: none; }
+  .site-nav::after { content: "https://EvansCarlsonSociety.us"; }
+
+  /* Body: the article itself, not the furniture around it. */
+  section:has(.scroller-buttons), .top-link { display: none; }
+  .about { margin: 0; }
+
+  .article-figure { break-inside: avoid; margin: 0 auto 6mm; }
+  .article-figure img {
+    width: auto;
+    max-width: 100%;
+    max-height: 95mm;
+    height: auto;
+    margin: 0 auto;
+  }
+
+  .article-body p { orphans: 3; widows: 3; }
+
+  /* Footer: the site address, italic, and the QR code. */
+  .print-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8mm;
+    /* same measure as the article column, so the footer lines up with it */
+    max-width: 40em;
+    margin: 8mm auto 0;
+    padding-top: 3mm;
+    border-top: 1px solid var(--line);
+    break-inside: avoid;
+  }
+  .print-footer-line { font-style: italic; margin: 0; }
+  .print-qr { width: 24mm; height: 24mm; display: block; }
 }

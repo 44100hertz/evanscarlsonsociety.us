@@ -1,48 +1,37 @@
 (function () {
   var root = document.documentElement;
-  var masthead = document.querySelector('.masthead');
-  var toggle = document.querySelector('.theme-toggle');
-  var choices = [].slice.call(document.querySelectorAll('[data-theme-choice]'));
+  var themeButton = document.querySelector('.theme-button');
+  var printButton = document.querySelector('.print-button');
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  function apply(theme) {
-    root.dataset.theme = theme;
-    try { localStorage.setItem('ecs-theme', theme); } catch (e) {}
-    choices.forEach(function (b) {
-      b.setAttribute('aria-pressed', String(b.dataset.themeChoice === theme));
-    });
+  function isNight() {
+    return root.dataset.theme === 'night';
+  }
+
+  // The two theme icons swap in CSS off [data-theme]; the script only flips the
+  // attribute, stores the choice and keeps the button's name honest.
+  function nameThemeButton() {
+    var label = isNight() ? 'Switch to paper theme' : 'Switch to night theme';
+    themeButton.setAttribute('aria-label', label);
+    themeButton.title = label;
   }
 
   var saved = null;
   try { saved = localStorage.getItem('ecs-theme'); } catch (e) {}
-  if (saved === 'night' || saved === 'paper') apply(saved);
+  if (saved === 'night' || saved === 'paper') root.dataset.theme = saved;
 
-  function setChoosing(open) {
-    masthead.classList.toggle('choosing', open);
-    toggle.setAttribute('aria-expanded', String(open));
+  if (themeButton) {
+    nameThemeButton();
+    themeButton.addEventListener('click', function () {
+      root.dataset.theme = isNight() ? 'paper' : 'night';
+      try { localStorage.setItem('ecs-theme', root.dataset.theme); } catch (e) {}
+      nameThemeButton();
+    });
   }
 
-  if (toggle && masthead) {
-    toggle.addEventListener('click', function () {
-      setChoosing(!masthead.classList.contains('choosing'));
-    });
-    choices.forEach(function (b) {
-      b.addEventListener('click', function () {
-        apply(b.dataset.themeChoice);
-        setChoosing(false);
-        toggle.focus();
-      });
-    });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && masthead.classList.contains('choosing')) {
-        setChoosing(false);
-        toggle.focus();
-      }
-    });
-    document.addEventListener('click', function (e) {
-      if (masthead.classList.contains('choosing') && !masthead.contains(e.target)) {
-        setChoosing(false);
-      }
+  if (printButton) {
+    printButton.addEventListener('click', function () {
+      window.print();
     });
   }
 
